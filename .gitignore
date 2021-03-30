@@ -1,0 +1,9 @@
+# Directories...
+src/dist
+src/downloads
+src/node_modules
+
+# Files...
+config/index.ts
+src/*lock.json
+src/*.log
