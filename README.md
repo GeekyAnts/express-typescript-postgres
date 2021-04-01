@@ -55,10 +55,6 @@ npm install;
 ### Development Environment
 
 ```sh
-#
-# Notice: You should have "nodemon" package installed globally using npm
-# in your system.
-#
 npm run dev;
 ```
 

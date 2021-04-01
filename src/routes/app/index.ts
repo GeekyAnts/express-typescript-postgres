@@ -1,20 +1,20 @@
 /**
  *        @file app.ts
- *  @repository 000-a-3100_api_boilerplate
- * @application 000-a-3100_api_boilerplate
+ *  @repository 016-n-3020_impact_api
+ * @application 016-n-3020_impact_api
  *     @summary Application routes
  * @description Handles following routes:
  *              - GET '/version'
  */
 import express from 'express'
 
-import { wrapper } from '../helpers'
-import { AppController } from '../controllers'
+import { wrapper } from '../../helpers'
+import { AppController } from '../../controllers'
 
 const router = express.Router()
 
 /**
- * @swagger
+ * @openapi
  * /v0/app/version:
  *  get:
  *    tags:
@@ -31,10 +31,7 @@ const router = express.Router()
  *                success:
  *                  type: boolean
  *                data:
- *                  type: object
- *                  properties:
- *                    message:
- *                      type: string
+ *                  $ref: '#/components/schemas/version'
  */
 router.get(
 	'/version',

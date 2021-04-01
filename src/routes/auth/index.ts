@@ -1,7 +1,7 @@
 /**
  *        @file app.ts
- *  @repository 000-a-3100_api_boilerplate
- * @application 000-a-3100_api_boilerplate
+ *  @repository 016-n-3020_impact_api
+ * @application 016-n-3020_impact_api
  *     @summary Authentication routes
  * @description Handles following routes:
  *              - POST '/login'
@@ -11,16 +11,16 @@
  *              - GET  '/refresh-token'
  */
 import express from 'express'
-import { wrapper } from '../helpers'
-import Schema from '../middlewares/schema'
-import AuthValidator from '../validators/auth'
-import { AuthController } from '../controllers'
-import CheckAuth from '../middlewares/check_auth'
+import { wrapper } from '../../helpers'
+import Schema from '../../middlewares/schema'
+import AuthValidator from '../../validators/auth'
+import { AuthController } from '../../controllers'
+import CheckAuth from '../../middlewares/check_auth'
 
 const router = express.Router()
 
 /**
- * @swagger
+ * @openapi
  *
  * /v0/auth/login:
  *   post:
@@ -31,13 +31,13 @@ const router = express.Router()
  *      required: true
  *      content:
  *        application/json:
- *         schema:
- *          type: object
- *          properties:
- *             username:
- *                 type: string
- *             password:
- *                 type: string
+ *          schema:
+ *            type: object
+ *            properties:
+ *              username:
+ *                type: string
+ *              password:
+ *                type: string
  *     responses:
  *       200:
  *        description: Success
@@ -49,16 +49,7 @@ const router = express.Router()
  *                success:
  *                  type: boolean
  *                data:
- *                  type: object
- *                  properties:
- *                    message:
- *                      type: string
- *                    authToken:
- *                      type: string
- *                    user:
- *                      type: object
- *                    device:
- *                      type: object
+ *                  $ref: '#/components/schemas/login'
  */
 router.post(
     '/login',
@@ -69,7 +60,7 @@ router.post(
 )
 
 /**
- * @swagger
+ * @openapi
  * /v0/auth/forgot-password:
  *   post:
  *     tags:
@@ -110,7 +101,7 @@ router.post(
 )
 
 /**
- * @swagger
+ * @openapi
  * /v0/auth/change-password:
  *   post:
  *     tags:
@@ -160,7 +151,7 @@ router.post(
 )
 
 /**
- * @swagger
+ * @openapi
  *
  * /v0/auth/whoami:
  *   get:
@@ -185,7 +176,7 @@ router.post(
  *                    message:
  *                      type: string
  *                    user:
- *                      type: object
+ *                      $ref: '#/components/schemas/user'
  */
 router.get(
     '/whoami',
@@ -199,7 +190,7 @@ router.get(
 )
 
 /**
- * @swagger
+ * @openapi
  *
  * /v0/auth/refresh-token:
  *   get:
@@ -219,16 +210,7 @@ router.get(
  *                success:
  *                  type: boolean
  *                data:
- *                  type: object
- *                  properties:
- *                    message:
- *                      type: string
- *                    authToken:
- *                      type: string
- *                    user:
- *                      type: object
- *                    device:
- *                      type: object
+ *                  $ref: '#/components/schemas/login'
  */
 router.get(
     '/refresh-token',

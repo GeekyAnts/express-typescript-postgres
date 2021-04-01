@@ -143,48 +143,44 @@ export class UserService extends CommonService {
 	}
 
 	// add user
-	public async addUser(username: string, password: string, id_person?: number, role_name?: string, pool?: PGPool): Promise<any> {
-		let pooldefinedLocally: boolean = false
+  public async addUser(user: User, pool?: PGPool): Promise<any> {
+    let pooldefinedLocally: boolean = false
 
-		// pool is not supplied, create one AND start transaction
-		if (pool === undefined) {
-			pooldefinedLocally = true
-			pool = Helper.pool()
-			// begin transaction 
-			await Helper.beginTransaction(pool, this.user_current)
-		}
+    // pool is not supplied, create one AND start transaction
+    if (pool === undefined) {
+      pooldefinedLocally = true
+      pool = Helper.pool()
+      // begin transaction
+      await Helper.beginTransaction(pool, this.user_current)
+    }
 
-		if (role_name !== 'patient' && !(/\S+@\S+\.\S+/.test(username))) {
-			return { success: false, data: { message: "User name should be email address" } }
-		} else if (role_name === 'patient') {
-			username = 'IVHT-' + (id_person || '0')
-		}
+    if (!/\S+@\S+\.\S+/.test(user.username || '')) {
+      return { success: false, data: { message: 'User name should be email address' } }
+    }
 
-		try {
-			// insert user row
-			const sql_user = `INSERT INTO users (id_person, username, salt, hashpass)
-				VALUES ($1, $2, $3, $4) returning id`
-			const user_params = [id_person === undefined ? null : id_person, username, 'salt', password]
-			const userResult = await pool.aquery(this.user_current, sql_user, user_params)
+    try {
+      // insert user row
+      const sql_user = `INSERT INTO users (username, salt, hashpass, first_name, last_name)
+				VALUES ('${user.username}', 'salt', '${user.hashpass}', '${user.first_name}', '${user.last_name}') returning id`
 
-			// insert permissions row
-			const sql_user_roles = `INSERT INTO user_roles (id_user, id_role)
-				VALUES ($1, (SELECT id FROM roles WHERE name = $2)) returning id`
+      const userResult = await pool.aquery(this.user_current, sql_user, [])
 
-			const user_role_params = [userResult.rows[0].id, role_name]
-			const userRoleResult = await pool.aquery(this.user_current, sql_user_roles, user_role_params)
+      // insert permissions row
+      const sql_user_roles = `INSERT INTO user_roles (id_user, id_role)
+				VALUES ($1, $2) returning id`
 
-			// commit if there is a transaction
-			if (pooldefinedLocally)
-				await Helper.commitTransaction(pool, this.user_current)
+      const user_role_params = [userResult.rows[0].id, user.id_role]
+      const userRoleResult = await pool.aquery(this.user_current, sql_user_roles, user_role_params)
 
-			return { success: true, data: { message: 'Row(s) inserted', id_user: userResult.rows[0].id, id_user_role: userRoleResult.rows[0].id } }
+      // commit if there is a transaction
+      if (pooldefinedLocally) await Helper.commitTransaction(pool, this.user_current)
 
-		} catch (error) {
-			logger.error(`UserService.addUser() Error: ${error}`)
-			return { success: false, data: { message: error.detail || error } }
-		}
-	}
+      return { success: true, data: { message: 'Row(s) inserted', id_user: userResult.rows[0].id, id_user_role: userRoleResult.rows[0].id } }
+    } catch (error) {
+      logger.error(`UserService.addUser() Error: ${error}`)
+      return { success: false, data: { message: error.detail || error } }
+    }
+  }
 
 	// login using username AND password AND get user details AND auth token
 	public static async login(username: string, password: string) {
@@ -207,25 +203,14 @@ export class UserService extends CommonService {
 		const pool = Helper.pool()
 		const cUser = Helper.defaultUser()
 		try {
-			let sql = `SELECT users.id, users.username, users.deleted, 
-				organizations.name,
-				persons.id AS id_person, persons.first_name, persons.last_name, persons.email,
-				persons.id_person_type, persons.dob, persons.id_time_zone,
-				time_zones.tz_identifier,
-				person_types.name as person_type, 
-				CASE person_types.name WHEN 'patient' THEN 1 ELSE 0 END AS is_patient,
-				CASE person_types.name WHEN 'clinician' THEN 1 ELSE 0 END AS is_clinician,
-				CASE person_types.name WHEN 'clinician' THEN 0  WHEN 'patient' THEN 0 ELSE 1 END AS is_admin,
-				roles.id AS id_role, roles.name AS role_name
-				FROM users
-				LEFT OUTER JOIN persons on users.id_person = persons.id AND persons.deleted=false
-				LEFT OUTER JOIN person_types on person_types.id = persons.id_person_type
-				LEFT OUTER JOIN organizations on persons.id_org = organizations.id
-				LEFT OUTER JOIN time_zones on time_zones.id = persons.id_time_zone
-				LEFT OUTER JOIN user_roles on user_roles.id_user = users.id AND user_roles.deleted=false
-				LEFT OUTER JOIN roles on roles.id = user_roles.id_role AND roles.deleted=false
-				WHERE users.deleted = false 
-				AND users.username = $1 ` ;
+			let sql = `SELECT users.id, users.username, users.deleted, users.is_active, users.first_name, users.last_name,
+      CASE roles.name WHEN 'admin' THEN TRUE ELSE false END AS is_admin,
+      roles.id AS id_role, roles.name AS role_name
+      FROM users
+      LEFT OUTER JOIN user_roles on user_roles.id_user = users.id AND user_roles.deleted=false
+      LEFT OUTER JOIN roles on roles.id = user_roles.id_role AND roles.deleted=false
+      WHERE users.deleted = false 
+      AND users.username = $1 ` ;
 			let params = [username];
 
 			if (!is_whomai && !is_authenticate_without_password) {
@@ -257,9 +242,45 @@ export class UserService extends CommonService {
 				data: { user }
 			}
 		} catch (error) {
+			logger.error(`UserService.addUser() Error: ${error}`)
 			return { success: false, data: { message: error } }
 		}
 	}
+
+  public async getSingleUser(user: User) {
+    const pool = Helper.pool()
+    const cUser = Helper.defaultUser()
+    const UserID = user.id
+    try {
+      let sql = `SELECT users.id, users.username, users.deleted, users.is_active, users.first_name, users.last_name,
+      CASE roles.name WHEN 'admin' THEN TRUE ELSE false END AS is_admin,
+      CASE roles.name WHEN 'engineer' THEN TRUE ELSE false END AS is_engineer,
+      CASE roles.name WHEN 'technician' THEN TRUE ELSE false END AS is_technician,
+      CASE roles.name WHEN 'operator_calibration' THEN TRUE ELSE false END AS is_operator_calibration,
+      CASE roles.name WHEN 'operator_qa' THEN TRUE ELSE false END AS is_operator_qa,
+      CASE roles.name WHEN 'operator_reconditioning' THEN TRUE ELSE false END AS is_operator_reconditioning,
+      CASE roles.name WHEN 'operator_alert_monitor' THEN TRUE ELSE false END AS is_operator_alert_monitor,
+      roles.id AS id_role, roles.name AS role_name
+      FROM users
+      LEFT OUTER JOIN user_roles on user_roles.id_user = users.id AND user_roles.deleted=false
+      LEFT OUTER JOIN roles on roles.id = user_roles.id_role AND roles.deleted=false
+      WHERE users.deleted = false 
+      AND users.id = $1 `
+
+      let params = [UserID]
+
+      const query_results = await pool.aquery(cUser, sql, params)
+
+      if (query_results.rowCount <= 0) {
+        throw 'No data'
+      }
+
+      const getUser = Helper.getUser(query_results.rows[0])
+      return { success: true, data: { getUser } }
+    } catch (error) {
+      return { success: false, data: { message: error } }
+    }
+  }
 
 	// forgot password
 	public static async forgotPassword(_username: string, newPassword: string) {
@@ -370,6 +391,41 @@ export class UserService extends CommonService {
 
 		return this.user_current
 	}
+  public async updateUser(user: User) {
+    const pool = Helper.pool()
+
+    if (!/\S+@\S+\.\S+/.test(user.username || '')) {
+      return { success: false, data: { message: 'User name should be email address' } }
+    }
+    try {
+      // begin transaction
+      await Helper.beginTransaction(pool, this.user_current)
+      let user_columns = `username = '${user.username}', first_name = '${user.first_name}', 
+      last_name = '${user.last_name}', is_active = '${user.is_active}'`
+      if(user.hashpass) user_columns += `, hashpass = '${user.hashpass}'`
+      // update users
+      const user_sql = `UPDATE users SET ${user_columns} WHERE id = '${user.id}'`
+
+      const res = await pool.aquery(this.user_current, user_sql, [])
+      if(!res.rowCount) throw 'User does not exist'
+
+      let roles_columns = `id_role = '${user.id_role}'`
+      // update user_roles
+      const roles_sql = `UPDATE user_roles SET ${roles_columns} WHERE id_user = '${user.id}'`
+
+      await pool.aquery(this.user_current, roles_sql, [])
+
+      //commit transaction
+      await Helper.commitTransaction(pool, this.user_current)
+      return { success: true, data: { message: 'Row(s) updated' } }
+    } catch (error) {
+      logger.error(`UserService.updateUser() Error: ${error}`)
+      return { success: false, data: { message: error.detail || error } }
+    }
+  }
+  public async getAllRoles(): Promise<any> {
+    return await this.getRows('select id, name, label, description, rank, active from roles', [])
+  }
 }
 
 export default UserService
