@@ -4,24 +4,26 @@
  * @application 000-a-3100_api_boilerplate
  *     @summary Starting point of the application
  * @description Handles the following middlwares:
- *              - CORS and Logger 
+ *              - CORS and Logger
  *              - Swagger
  *              - API routes
  *              - Auto Update Schema
  *              - Server
  */
 import express from 'express'
+import yaml from 'js-yaml'
+import fs from 'fs'
+import swaggerUi from 'swagger-ui-express'
+
 import routes from './routes'
 import CORS from './providers/cors'
 import * as config from '../config'
 import PGPool from './db_pool/pg_pool'
 import DBSchema from './db_pool/schema'
-import options from './swagger/swagger'
-import swaggerJsdoc from 'swagger-jsdoc'
-import swaggerUi from 'swagger-ui-express'
 import { notFoundHandler } from './helpers'
 import * as ver from './providers/version'
 import { logger, initRequest, logResponse } from './providers/logger'
+require('./extractOpenAPI') // Update impact_api.yaml
 
 const app = express()
 const http = require('http')
@@ -55,8 +57,12 @@ async function main() {
 	await DBSchema.handle(main, pool, config.dbObj)
 
 	// set swagger
-	const oas3Specification = swaggerJsdoc(options)
-	app.use('/swagger', swaggerUi.serve, swaggerUi.setup(oas3Specification))
+	try {
+		const oas3Specification: any = yaml.load(fs.readFileSync('./swagger/impact_api.yaml', 'utf8'))
+		app.use('/swagger', swaggerUi.serve, swaggerUi.setup(oas3Specification))
+	} catch (error) {
+		logger.error(`main(): Swagger error: ${error}`)
+	}
 
 	// set versions
 	app.use('/v0', routes)
@@ -70,7 +76,7 @@ async function main() {
 			return console.error('Error: ', _error)
 		}
 		logger.info(`Website API Server is running`)
-
+		logger.info(`Connected with Database: ${config.dbObj.database} and host: ${config.dbObj.host} as user: ${config.dbObj.user}`)
 		return console.log(
 			'\x1b[33m%s\x1b[0m',
 			`Server :: Running @ 'http://localhost:${port}'`

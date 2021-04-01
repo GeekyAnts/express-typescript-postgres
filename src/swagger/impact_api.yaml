@@ -1,0 +1,602 @@
+openapi: "3.0.2"
+info:
+  version: "v0"
+  title: "Website APIs"
+  description: "Website documentation to create a CRUD style API in NodeJs using TypeScript"
+servers:
+  - url: "https://dev.website.com/api"
+    description: "DEV server"
+  - url: "https://qa.website.com/api"
+    description: "QA server"
+  - url: "https://prod.website.com/api"
+    description: "PROD server"
+  - url: "http://localhost:5002"
+    description: "LOCAL 5002"
+  - url: "http://localhost:6002"
+    description: "LOCAL 6002"
+components:
+  schemas:
+    User:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+        first_name:
+          type: "string"
+        last_name:
+          type: "string"
+        id_role:
+          type: "number"
+        is_active:
+          type: "boolean"
+    version:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        version:
+          type: "string"
+        commit:
+          type: "string"
+        commitshort:
+          type: "string"
+        apiVerMajor:
+          type: "number"
+        apiVerMinor:
+          type: "number"
+        apiVerPatch:
+          type: "number"
+        apiVerBuild:
+          type: "number"
+    login:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          type: "object"
+          properties:
+            message:
+              type: "string"
+            authToken:
+              type: "string"
+            user:
+              type: "object"
+              properties:
+                id:
+                  type: "number"
+                username:
+                  type: "string"
+                first_name:
+                  type: "string"
+                last_name:
+                  type: "string"
+                id_role:
+                  type: "number"
+                is_active:
+                  type: "boolean"
+                is_admin:
+                  type: "boolean"
+                is_engineer:
+                  type: "boolean"
+                is_technician:
+                  type: "boolean"
+                is_operator_calibration:
+                  type: "boolean"
+                is_operator_qa:
+                  type: "boolean"
+                is_operator_reconditioning:
+                  type: "boolean"
+                is_operator_alert_monitor:
+                  type: "boolean"
+    user:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        username:
+          type: "string"
+        first_name:
+          type: "string"
+        last_name:
+          type: "string"
+        id_role:
+          type: "number"
+        is_active:
+          type: "boolean"
+        is_admin:
+          type: "boolean"
+        is_engineer:
+          type: "boolean"
+        is_technician:
+          type: "boolean"
+        is_operator_calibration:
+          type: "boolean"
+        is_operator_qa:
+          type: "boolean"
+        is_operator_reconditioning:
+          type: "boolean"
+        is_operator_alert_monitor:
+          type: "boolean"
+    roles:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          id:
+            type: "number"
+          name:
+            type: "string"
+          label:
+            type: "string"
+          description:
+            type: "string"
+          rank:
+            type: "number"
+          active:
+            type: "boolean"
+  securitySchemes:
+    BasicAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+paths:
+  /v0/app/version:
+    get:
+      tags:
+        - "App"
+      summary: "Get API Version"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      name:
+                        type: "string"
+                      version:
+                        type: "string"
+                      commit:
+                        type: "string"
+                      commitshort:
+                        type: "string"
+                      apiVerMajor:
+                        type: "number"
+                      apiVerMinor:
+                        type: "number"
+                      apiVerPatch:
+                        type: "number"
+                      apiVerBuild:
+                        type: "number"
+  /v0/auth/login:
+    post:
+      tags:
+        - "Auth"
+      summary: "Login"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+                password:
+                  type: "string"
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      success:
+                        type: "boolean"
+                      data:
+                        type: "object"
+                        properties:
+                          message:
+                            type: "string"
+                          authToken:
+                            type: "string"
+                          user:
+                            type: "object"
+                            properties:
+                              id:
+                                type: "number"
+                              username:
+                                type: "string"
+                              first_name:
+                                type: "string"
+                              last_name:
+                                type: "string"
+                              id_role:
+                                type: "number"
+                              is_active:
+                                type: "boolean"
+                              is_admin:
+                                type: "boolean"
+                              is_engineer:
+                                type: "boolean"
+                              is_technician:
+                                type: "boolean"
+                              is_operator_calibration:
+                                type: "boolean"
+                              is_operator_qa:
+                                type: "boolean"
+                              is_operator_reconditioning:
+                                type: "boolean"
+                              is_operator_alert_monitor:
+                                type: "boolean"
+  /v0/auth/forgot-password:
+    post:
+      tags:
+        - "Auth"
+      summary: "Generate new password"
+      requestBody:
+        description: "Username"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      message:
+                        type: "string"
+  /v0/auth/change-password:
+    post:
+      tags:
+        - "Auth"
+      security:
+        - BasicAuth: []
+      summary: "Change password"
+      requestBody:
+        description: "user and password details"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+                oldPassword:
+                  type: "string"
+                newPassword:
+                  type: "string"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      message:
+                        type: "string"
+  /v0/auth/whoami:
+    get:
+      tags:
+        - "Auth"
+      security:
+        - BasicAuth: []
+      summary: "whoami"
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      message:
+                        type: "string"
+                      user:
+                        type: "object"
+                        properties:
+                          id:
+                            type: "number"
+                          username:
+                            type: "string"
+                          first_name:
+                            type: "string"
+                          last_name:
+                            type: "string"
+                          id_role:
+                            type: "number"
+                          is_active:
+                            type: "boolean"
+                          is_admin:
+                            type: "boolean"
+                          is_engineer:
+                            type: "boolean"
+                          is_technician:
+                            type: "boolean"
+                          is_operator_calibration:
+                            type: "boolean"
+                          is_operator_qa:
+                            type: "boolean"
+                          is_operator_reconditioning:
+                            type: "boolean"
+                          is_operator_alert_monitor:
+                            type: "boolean"
+  /v0/auth/refresh-token:
+    get:
+      tags:
+        - "Auth"
+      security:
+        - BasicAuth: []
+      summary: "refresh-token"
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      success:
+                        type: "boolean"
+                      data:
+                        type: "object"
+                        properties:
+                          message:
+                            type: "string"
+                          authToken:
+                            type: "string"
+                          user:
+                            type: "object"
+                            properties:
+                              id:
+                                type: "number"
+                              username:
+                                type: "string"
+                              first_name:
+                                type: "string"
+                              last_name:
+                                type: "string"
+                              id_role:
+                                type: "number"
+                              is_active:
+                                type: "boolean"
+                              is_admin:
+                                type: "boolean"
+                              is_engineer:
+                                type: "boolean"
+                              is_technician:
+                                type: "boolean"
+                              is_operator_calibration:
+                                type: "boolean"
+                              is_operator_qa:
+                                type: "boolean"
+                              is_operator_reconditioning:
+                                type: "boolean"
+                              is_operator_alert_monitor:
+                                type: "boolean"
+  /v0/user/roles:
+    get:
+      tags:
+        - "User"
+      security:
+        - BasicAuth: []
+      summary: "View User Roles"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      result:
+                        type: "array"
+                        items:
+                          type: "object"
+                          properties:
+                            id:
+                              type: "number"
+                            name:
+                              type: "string"
+                            label:
+                              type: "string"
+                            description:
+                              type: "string"
+                            rank:
+                              type: "number"
+                            active:
+                              type: "boolean"
+  /v0/user/add:
+    post:
+      tags:
+        - "User"
+      security:
+        - BasicAuth: []
+      summary: "Add User"
+      requestBody:
+        description: "User Object"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+                password:
+                  type: "string"
+                first_name:
+                  type: "string"
+                last_name:
+                  type: "string"
+                id_role:
+                  type: "number"
+                is_active:
+                  type: "boolean"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      message:
+                        type: "string"
+                      id_user:
+                        type: "number"
+                      id_user_role:
+                        type: "number"
+  /v0/user:
+    get:
+      tags:
+        - "User"
+      security:
+        - BasicAuth: []
+      summary: "View Users"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      message:
+                        type: "string"
+  /v0/user/{id_user}:
+    get:
+      tags:
+        - "User"
+      security:
+        - BasicAuth: []
+      summary: "View User"
+      parameters:
+        - schema:
+            type: "integer"
+          required: true
+          in: "path"
+          name: "id_user"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      message:
+                        type: "string"
+    put:
+      tags:
+        - "User"
+      security:
+        - BasicAuth: []
+      summary: "Edit User"
+      parameters:
+        - schema:
+            type: "integer"
+          required: true
+          in: "path"
+          name: "id_user"
+      requestBody:
+        description: "User Object"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+                password:
+                  type: "string"
+                first_name:
+                  type: "string"
+                last_name:
+                  type: "string"
+                id_role:
+                  type: "number"
+                is_active:
+                  type: "boolean"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  success:
+                    type: "boolean"
+                  data:
+                    type: "object"
+                    properties:
+                      message:
+                        type: "string"
+tags: []
