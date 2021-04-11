@@ -58,7 +58,7 @@ async function main() {
 
 	// set swagger
 	try {
-		const oas3Specification: any = yaml.load(fs.readFileSync('./swagger/impact_api.yaml', 'utf8'))
+		const oas3Specification: any = yaml.load(fs.readFileSync('./swagger/backend_api.yaml', 'utf8'))
 		app.use('/swagger', swaggerUi.serve, swaggerUi.setup(oas3Specification))
 	} catch (error) {
 		logger.error(`main(): Swagger error: ${error}`)

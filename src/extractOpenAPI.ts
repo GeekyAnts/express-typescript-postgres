@@ -27,7 +27,7 @@ async function main(): Promise<number> {
         const api = await swaggerParser.validate(oas3Specification)
         const yaml_api = YAML.stringify(api);
         // dump the resulting valid API (in YAML format) to the swagger folder
-        const apiFile = path.join('swagger', 'impact_api.yaml')
+        const apiFile = path.join('swagger', 'backend_api.yaml')
         fs.writeFileSync(apiFile, yaml_api)
 
         // log the result and return no error
