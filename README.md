@@ -18,11 +18,11 @@ Nodemon				| >= 1.14.11
 # Structure
 ```bash
 ├── config
-│   |── index.sample.ts
+│   ├── index.sample.ts
 ├── database
-│   |── migrations
-│   |── seeders
-│   |── snapshots
+│   ├── migrations
+│   ├── seeders
+│   ├── snapshots
 ├── src
 │   ├── controllers
 │   │   ├── app.ts
