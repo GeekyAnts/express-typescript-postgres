@@ -125,7 +125,7 @@ npm install;
 1. You should have **"postgres"** user available in your postgres eco-system.
 2. **Create a database** with a name of your choice & assign **"postgres"** user to the database.
 3. Now, you should **run the initial seed file** into your DB's Query Tool.
-4. Seed file location: "**database/seeders/init.sql**".
+4. Define your migrations inside /database/migrations with format **yyyymmdd-001_(schemas/data/functions)_description.sql**
 
 # How to Run?
 
