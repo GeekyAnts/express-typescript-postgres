@@ -2,7 +2,7 @@
 
 ---
 
-Some times as the application scales working with relational databases becomes difficult, also if you feel adding an extra layer of ORM to relational databases costs your application performance compared to the advantages ORM provides then this repo solves all that problems. It uses the same PostgreSQL you know and love while applying Typescript with ExpressJS, basic authentication using JSON Web Token, role based access control & basic database designs.
+Some times as the application scales working with relational databases becomes difficult, also if you feel adding an extra layer of ORM to relational databases costs your application performance compared to the advantages ORM provides then you are at the right place as this repo solves all that problems. It uses the same PostgreSQL you know and love while applying Typescript with ExpressJS, basic authentication using JSON Web Token, role based access control & basic database designs.
 
 # Prerequisites
 
@@ -148,6 +148,8 @@ To ensure consitency of database across every system that uses this boilerplate 
 - If you are working in a large dev-team having knowledge of any new changes can help reduce errors.
 
 # Pre-defined routes
+
+---
 
 | Auth                      | User             | App           |
 | ------------------------- | -----------------| ------------- |
