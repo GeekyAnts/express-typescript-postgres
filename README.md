@@ -1,6 +1,23 @@
-# Website API - Repository
+A Boilerplate for Node.js, Express.js & PostgresSQL
 
-Some times as the application scales working with relational databases becomes difficult, also if you feel adding an extra layer of ORM to relational databases costs your application performance compared to the advantages ORM provides then you are at the right place as this repo solves all that problems. It uses the same PostgreSQL you know and love while applying Typescript with ExpressJS, basic authentication using JSON Web Token, role based access control & basic database designs.
+Here's few of the challenges we faced while working on an enterprise applications;
+
+1. Scaling the relational database with the upgrading application becomes difficult,
+2. Adding an extra layer of ORM costs your application in performance,
+3. Documenting the evolution of your application & the APIs has always been difficult,
+4. Reading a table's or a relation's structure of the database without going into the pgAdmin or actually writing "DESCRIBE table" SQL query was impossible.
+
+We came up with express-typescript-postgress, this repository solves all the above mentioned problems as well as the things beyond that! Here's the list of the things we've used in our repository:
+
+1. Express JWT for API Authentication,
+2. Events & Listeners for sending emails & other background works,
+3. Swagger / OpenAPI for API documentation,
+4. ES Lint with Prettier for finding & fixing common code problems,
+5. Migration logic base to maintain the database changes,
+6. Snapshots logic base to maintain all the table structure available for documentation,
+7. Middleware to manage RBAC (role based access control),
+
+and many more...
 
 # Prerequisites
 
@@ -15,11 +32,11 @@ ts-node-dev   | >= 1.0.0
 
 ```bash
 ├── config
-│   ├── index.sample.ts
+│   └── index.sample.ts
 ├── database
 │   ├── migrations
 │   ├── seeders
-│   ├── snapshots
+│   └── snapshots
 ├── src
 │   ├── controllers
 │   │   ├── app.ts
