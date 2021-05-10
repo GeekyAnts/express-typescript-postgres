@@ -132,8 +132,6 @@ npm install;
 
 # How to SetUp Database?
 
----
-
 1. You should have **"postgres"** user available in your postgres eco-system.
 2. **Create a database** with a name of your choice & assign **"postgres"** user to the database.
 3. Now, you should **run the initial seed file** into your DB's Query Tool or we run it for you when you run this application for the first time.
