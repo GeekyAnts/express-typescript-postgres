@@ -7,7 +7,7 @@ Here's few of the challenges we faced while working on an enterprise application
 3. Documenting the evolution of your application & the APIs has always been difficult,
 4. Reading a table's or a relation's structure of the database without going into the pgAdmin or actually writing "DESCRIBE table" SQL query was impossible.
 
-We came up with express-typescript-postgress, this repository solves all the above mentioned problems as well as the things beyond that! Here's the list of the things we've used in our repository:
+We came up with express-typescript-postgress, this repository solves all the above mentioned problems as well as the things beyond that! Here's the list of few things we've accomplished;
 
 1. Express JWT for API Authentication,
 2. Events & Listeners for sending emails & other background works,
@@ -19,7 +19,7 @@ We came up with express-typescript-postgress, this repository solves all the abo
 
 and many more...
 
-# Prerequisites
+# What are the Pre-requisites?
 
 Binaries      | Version
 ------------- | -------------
@@ -28,7 +28,7 @@ NPM           | >= 6.14.6
 PostgreSQL    | >= 12.1
 ts-node-dev   | >= 1.0.0
 
-# Structure
+# What is the Structure?
 
 ```bash
 ├── config
