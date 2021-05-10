@@ -1,12 +1,8 @@
 # Website API - Repository
 
----
-
 Some times as the application scales working with relational databases becomes difficult, also if you feel adding an extra layer of ORM to relational databases costs your application performance compared to the advantages ORM provides then you are at the right place as this repo solves all that problems. It uses the same PostgreSQL you know and love while applying Typescript with ExpressJS, basic authentication using JSON Web Token, role based access control & basic database designs.
 
 # Prerequisites
-
----
 
 Binaries      | Version
 ------------- | -------------
@@ -97,8 +93,6 @@ ts-node-dev   | >= 1.0.0
 
 # How to SetUp & Install?
 
----
-
 ```sh
 # Clone the repository
 git clone 
@@ -130,8 +124,6 @@ npm install;
 
 # Maintaining Database
 
----
-
 To ensure consitency of database across every system that uses this boilerplate code we use in house logic and auto update functions to maintain our migrations and snapshots.
 
  ### How Migration works
@@ -149,8 +141,6 @@ To ensure consitency of database across every system that uses this boilerplate 
 
 # Pre-defined routes
 
----
-
 | Auth                      | User             | App           |
 | ------------------------- | -----------------| ------------- |
 |`/auth/login`              |`/user`           | `/app/version`|
@@ -160,8 +150,6 @@ To ensure consitency of database across every system that uses this boilerplate 
 |`auth/refresh-token`       |`/user/{id_user}` |               |
 
 # How to Run?
-
----
 
 ### Development Environment
 
