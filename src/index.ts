@@ -23,7 +23,7 @@ import DBSchema from './db_pool/schema'
 import { notFoundHandler } from './helpers'
 import * as ver from './providers/version'
 import { logger, initRequest, logResponse } from './providers/logger'
-require('./extractOpenAPI') // Update impact_api.yaml
+import SwaggerInit from './swagger/init' // Update impact_api.yaml
 
 const app = express()
 const http = require('http')
@@ -58,6 +58,7 @@ async function main() {
 
 	// set swagger
 	try {
+		await SwaggerInit();
 		const oas3Specification: any = yaml.load(fs.readFileSync('./swagger/backend_api.yaml', 'utf8'))
 		app.use('/swagger', swaggerUi.serve, swaggerUi.setup(oas3Specification))
 	} catch (error) {

@@ -166,12 +166,14 @@ To ensure consitency of database across every system that uses this boilerplate 
 ### Development Environment
 
 ```sh
+cd src/
 npm run dev;
 ```
 
 ### Production Environment
 
 ```sh
+cd src/ 
 npm run prod;
 ```
 

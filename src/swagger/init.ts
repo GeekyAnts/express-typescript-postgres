@@ -4,7 +4,7 @@ import swaggerParser from '@apidevtools/swagger-parser'
 import fs from 'fs'
 import path from 'path'
 
-import options from './swagger'
+import options from '.'
 const YAML = require('json-to-pretty-yaml');
 
 /**
@@ -17,7 +17,7 @@ const YAML = require('json-to-pretty-yaml');
  * 
  * @returns 0 for success, 1 for error
  */
-async function main(): Promise<number> {
+export default async function main(): Promise<number> {
 
     try {
         // extract the full specification from source code
@@ -43,5 +43,3 @@ async function main(): Promise<number> {
     }
 
 }
-
-main()

@@ -15,7 +15,6 @@
 
 import events from '../events'
 import { UserService } from '../services'
-import { randomString } from '../helpers'
 import { CUserAuthInfoRequest } from '../db_pool/helper'
 import { Response, Request, NextFunction } from 'express'
 
@@ -32,8 +31,7 @@ export class AuthController {
 
 	public static async forgotPassword(req: Request, res: Response, _next: NextFunction) {
 		const { username } = req.body
-		const newPassword = randomString(10)
-		return res.send(await UserService.forgotPassword(username, newPassword))
+		return res.send(await UserService.forgotPassword(username))
 	}
 
 	public static async changePassword(req: CUserAuthInfoRequest, res: Response, _next: NextFunction) {

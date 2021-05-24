@@ -27,6 +27,7 @@ import PGPool from '../db_pool/pg_pool'
 import { CommonService } from '../services'
 import { logger } from '../providers/logger'
 import { TokenBody } from '../typings/interface'
+import { randomString } from '../helpers'
 
 const jwt = require('njwt')
 
@@ -283,7 +284,8 @@ export class UserService extends CommonService {
   }
 
 	// forgot password
-	public static async forgotPassword(_username: string, newPassword: string) {
+	public static async forgotPassword(_username: string) {
+		const newPassword = randomString(config.randomPasswordLength)
 		const pool = Helper.pool()
 		const objSysAdmin = Helper.defaultUser()
 		const sql = `SELECT username, email 
