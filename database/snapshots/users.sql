@@ -8,11 +8,9 @@ CREATE TABLE public.users(
 	deleted_date timestamp without time zone NULL,
 	id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass),
 	username character varying NOT NULL,
-	id_person integer NULL,
 	salt character varying NOT NULL,
 	hashpass character varying NOT NULL,
 	CONSTRAINT pk_users PRIMARY KEY (id),
-	CONSTRAINT ak_user_username UNIQUE (username),
-	CONSTRAINT fk_users_person_pk FOREIGN KEY (id_person) REFERENCES public.persons (id) 
+	CONSTRAINT ak_user_username UNIQUE (username) 
 	)
 	
