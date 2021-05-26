@@ -13,19 +13,12 @@ class UserValidator {
     return Joi.object({
       username: Joi.string().required(),
       password: Joi.string().required(),
-      first_name: Joi.string().required(),
-      last_name: Joi.string().required(),
-      is_active: Joi.boolean().required(),
       id_role: Joi.number().required(),
     })
   }
   public editUser() {
     return Joi.object({
       username: Joi.string().required(),
-      password: Joi.string(),
-      first_name: Joi.string().required(),
-      last_name: Joi.string().required(),
-      is_active: Joi.boolean().required(),
       id_role: Joi.number().required(),
     })
   }

@@ -111,37 +111,22 @@ export class UserService extends CommonService {
 
 	// get all users
 	public async getAllUsers(): Promise<any> {
-		const sql = `SELECT users.id, users.username, users.deleted, 
-        organizations.name,
-        persons.id AS id_person,
-        persons.first_name, persons.last_name, persons.email,
-        persons.id_person_type, persons.emr, persons.npi, persons.dob,
-        persons.id_time_zone,
-        time_zones.tz_identifier,
-        person_types.name as person_type, 
-        CASE person_types.name WHEN 'patient' THEN 1 ELSE 0 END AS is_patient,
-        CASE person_types.name WHEN 'clinician' THEN 1 ELSE 0 END AS is_clinician,
-        CASE person_types.name WHEN 'clinician' THEN 0  WHEN 'patient' THEN 0 ELSE 1 END AS is_admin,
-        (SELECT id_person_clinician FROM patient_clinicians WHERE id_person_patient=persons.id AND deleted=false AND is_primary_clinician = TRUE AND NOW() BETWEEN start_date AND end_date) AS id_person_clinician,
-        roles.id AS id_role,
-        roles.name AS role_name
-        FROM users
-        LEFT OUTER JOIN persons  on users.id_person = persons.id 
-        LEFT OUTER JOIN organizations on persons.id_org = organizations.id
-        LEFT OUTER JOIN person_types on person_types.id = persons.id_person_type
-        LEFT OUTER JOIN time_zones on time_zones.id = persons.id_time_zone
-        LEFT OUTER JOIN user_roles on user_roles.id_user = users.id
-        LEFT OUTER JOIN roles on roles.id = user_roles.id_role
-        WHERE users.deleted = false`
-
+		const sql = `SELECT users.id, users.username, users.deleted,
+			CASE roles.name WHEN 'admin' THEN TRUE ELSE false END AS is_admin,
+			roles.id AS id_role, roles.name AS role_name
+			FROM users
+			LEFT OUTER JOIN user_roles on user_roles.id_user = users.id AND user_roles.deleted=false
+			LEFT OUTER JOIN roles on roles.id = user_roles.id_role AND roles.deleted=false
+			WHERE users.deleted = false`
+	
 		const pool = Helper.pool()
 		const query_results = await pool.aquery(this.user_current, sql)
-
+	
 		return {
-			success: true,
-			data: query_results.rows
+		  success: true,
+		  data: query_results.rows,
 		}
-	}
+	  }
 
 	// add user
   public async addUser(user: User, pool?: PGPool): Promise<any> {
@@ -161,8 +146,8 @@ export class UserService extends CommonService {
 
     try {
       // insert user row
-      const sql_user = `INSERT INTO users (username, salt, hashpass, first_name, last_name)
-				VALUES ('${user.username}', 'salt', '${user.hashpass}', '${user.first_name}', '${user.last_name}') returning id`
+      const sql_user = `INSERT INTO users (username, salt, hashpass)
+				VALUES ('${user.username}', 'salt', '${user.hashpass}') returning id`
 
       const userResult = await pool.aquery(this.user_current, sql_user, [])
 
@@ -176,7 +161,10 @@ export class UserService extends CommonService {
       // commit if there is a transaction
       if (pooldefinedLocally) await Helper.commitTransaction(pool, this.user_current)
 
-      return { success: true, data: { message: 'Row(s) inserted', id_user: userResult.rows[0].id, id_user_role: userRoleResult.rows[0].id } }
+      return {
+        success: true,
+        data: { message: 'Row(s) inserted', id_user: userResult.rows[0].id, id_user_role: userRoleResult.rows[0].id },
+      }
     } catch (error) {
       logger.error(`UserService.addUser() Error: ${error}`)
       return { success: false, data: { message: error.detail || error } }
@@ -204,14 +192,14 @@ export class UserService extends CommonService {
 		const pool = Helper.pool()
 		const cUser = Helper.defaultUser()
 		try {
-			let sql = `SELECT users.id, users.username, users.deleted, users.is_active, users.first_name, users.last_name,
-      CASE roles.name WHEN 'admin' THEN TRUE ELSE false END AS is_admin,
-      roles.id AS id_role, roles.name AS role_name
-      FROM users
-      LEFT OUTER JOIN user_roles on user_roles.id_user = users.id AND user_roles.deleted=false
-      LEFT OUTER JOIN roles on roles.id = user_roles.id_role AND roles.deleted=false
-      WHERE users.deleted = false 
-      AND users.username = $1 ` ;
+			let sql = `SELECT users.id, users.username, users.deleted,
+						CASE roles.name WHEN 'admin' THEN TRUE ELSE false END AS is_admin,
+						roles.id AS id_role, roles.name AS role_name
+						FROM users
+						LEFT OUTER JOIN user_roles on user_roles.id_user = users.id AND user_roles.deleted=false
+						LEFT OUTER JOIN roles on roles.id = user_roles.id_role AND roles.deleted=false
+						WHERE users.deleted = false 
+						AND users.username = $1 ` ;
 			let params = [username];
 
 			if (!is_whomai && !is_authenticate_without_password) {
@@ -253,14 +241,8 @@ export class UserService extends CommonService {
     const cUser = Helper.defaultUser()
     const UserID = user.id
     try {
-      let sql = `SELECT users.id, users.username, users.deleted, users.is_active, users.first_name, users.last_name,
+      let sql = `SELECT users.id, users.username, users.deleted,
       CASE roles.name WHEN 'admin' THEN TRUE ELSE false END AS is_admin,
-      CASE roles.name WHEN 'engineer' THEN TRUE ELSE false END AS is_engineer,
-      CASE roles.name WHEN 'technician' THEN TRUE ELSE false END AS is_technician,
-      CASE roles.name WHEN 'operator_calibration' THEN TRUE ELSE false END AS is_operator_calibration,
-      CASE roles.name WHEN 'operator_qa' THEN TRUE ELSE false END AS is_operator_qa,
-      CASE roles.name WHEN 'operator_reconditioning' THEN TRUE ELSE false END AS is_operator_reconditioning,
-      CASE roles.name WHEN 'operator_alert_monitor' THEN TRUE ELSE false END AS is_operator_alert_monitor,
       roles.id AS id_role, roles.name AS role_name
       FROM users
       LEFT OUTER JOIN user_roles on user_roles.id_user = users.id AND user_roles.deleted=false
@@ -328,7 +310,7 @@ export class UserService extends CommonService {
 	public async changePassword(_username: string, oldPassword: string, newPassword: string) {
 		const pool = Helper.pool()
 		const sqlGet =
-			'SELECT username, hashpass FROM users WHERE username = $1 AND and hashpass=crypt($2, hashpass)'
+			'SELECT username, hashpass FROM users WHERE username = $1 AND hashpass=crypt($2, hashpass)'
 
 		const userDetails = await pool.aquery(this.user_current, sqlGet, [_username, oldPassword])
 
@@ -402,8 +384,7 @@ export class UserService extends CommonService {
     try {
       // begin transaction
       await Helper.beginTransaction(pool, this.user_current)
-      let user_columns = `username = '${user.username}', first_name = '${user.first_name}', 
-      last_name = '${user.last_name}', is_active = '${user.is_active}'`
+      let user_columns = `username = '${user.username}'`
       if(user.hashpass) user_columns += `, hashpass = '${user.hashpass}'`
       // update users
       const user_sql = `UPDATE users SET ${user_columns} WHERE id = '${user.id}'`

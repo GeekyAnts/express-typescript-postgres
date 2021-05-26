@@ -225,7 +225,6 @@ ALTER TABLE public.database_updates OWNER TO postgres;
 CREATE TABLE public.users(
   id SERIAL NOT NULL,
   username VARCHAR NOT NULL,
-  id_person INTEGER, 
   salt VARCHAR NOT NULL,
   hashpass VARCHAR NOT NULL,
 	CONSTRAINT pk_users PRIMARY KEY (id),
@@ -244,7 +243,7 @@ CREATE TRIGGER users_enforce_secure_pwd_storage
 	EXECUTE PROCEDURE enforce_secure_pwd_storage();
 
 insert into public.users (created_by, id, username, salt, hashpass) 
-  values (1, 1, 'user_default', 'voice', 'user_default');
+  values (1, 1, 'user_default', 'default', 'user_default');
 
 /*==============================================================*/
 /* Function to update auto update schema                        */
