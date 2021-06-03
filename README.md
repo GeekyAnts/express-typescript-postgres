@@ -1,4 +1,4 @@
-A Boilerplate for Node.js, Express.js & PostgresSQL
+An API Boilerplate for Node.js, Express.js & PostgresSQL
 
 Here's few of the challenges we faced while working on an enterprise applications;
 
