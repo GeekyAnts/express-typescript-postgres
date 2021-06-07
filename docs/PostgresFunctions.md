@@ -1,8 +1,8 @@
 The overview of custom functions we have used in our application. You can find the `plpgsql` script for them in  `/database/seeders/init.sql` file. Here's a simple text based explanation of the same.
 
 # Terminologies
-1. CREATE OR REPLACE FUNCTION - If function does not exist it creates new one otherwise overwrite the same function
-2. current_setting - Gives you current value of setting in your postgres DB.
+1. CREATE OR REPLACE FUNCTION - If function does not exist, it creates a new one otherwise overwrites the same function
+2. current_setting - Gives you current values of setting in your postgres DB.
 3. STRICT - Asks to return only one row from the query otherwise throw TOO_MANY_ROWS exception.
 4. VOLATILE - A function which can modify the DB.
 5. COST - Cost defines expected arbitrary units of computations to execute the query or function.
@@ -19,7 +19,7 @@ This function will return integer
 
 Initialize UserID as -1
 
-Now Search for username current set in our DB
+Now Search for username currently set in our DB (In current_setting('postgres.username'))
     If found
         Return it as final value of this function
 
@@ -44,14 +44,20 @@ Set modified_by column to the id we get from the __current_user function.
 ```
 This function will return trigger
 
-If value of deleted column do not match is new row & old row and new row has its value as true
+If value of deleted column do not match in new row & old row & new row has its value as true
    	Set deleted_date column in current row to Current UTC Date.
-
-Set deleted_by column to the id we get from the __current_user function.
+    Set deleted_by column to the id we get from the __current_user function.
 ```
 
 ## Function -> `enforce_secure_pwd_storage`
 > Functionality: Hash the password
+
+> Prerequisite:
+```
+CREATE EXTENSION pgcrypto;
+
+This extension will give us the crypt method to be used in hashing
+```
 
 ```
 This function will return trigger
@@ -61,7 +67,7 @@ if password is null or empty on a new row
     (This password would be of no use since we also do not know what was hashed).
 
 if password is not null
-    Then we simply hash the rows haspass field using *Blowfish* algorithm.
+    Then we simply hash the row's haspass field using *Blowfish* algorithm.
 ```
 
 ## Trigger -> `users_enforce_secure_pwd_storage`
@@ -86,7 +92,7 @@ results
 rowCount
 
 We create a temporary table based from our existing *database_updates* table
-  where the rows are in *pending* status (Means they have not run yet) & 
+  where the rows are in *pending* status (Means they are yet to run) & 
   script name should be greater than the last executed *successful* 
   script row (We have script name for migration files prefixed with timestamp).
   These rows are fetched in the ascending order of *script_name* column
@@ -99,7 +105,8 @@ Now we iterate over this records array
     We console the error message &
     We update its status as *failed* in the table &
     We stop the execution of this function
-  if it is success
+  If it is success
     We console the success message &
-    We update its status as *successful* in the table
+    We update its status as *successful* in the table &
+    Move on to the next record
 ```

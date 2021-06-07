@@ -1,5 +1,5 @@
 Since Postgres in an RDBMS which supports some object oriented feature. We leveraged inheritance in this repository
-> These table's are for inheritance use only. They are not intended to contain their own data
+> These tables are for inheritance use only. They are not intended to contain their own data
 
 # Inherited Tables
 
