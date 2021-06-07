@@ -154,6 +154,14 @@ To ensure consitency of database across every system that uses this boilerplate 
 - Every time application runs the snapshots are updated with any new changes to the database design.
 - If you are working in a large dev-team having knowledge of any new changes can help reduce errors.
 
+# Explanation for custom postgres functions
+
+Go to file [PostgresFunctions.md](/docs/PostgresFunctions.md) for detailed explanation of various functions we have used.
+
+# Use of inheritance
+
+Go to file [Inheritance.md](/docs/Inheritance.md) for the explanation on use of inheritance.
+
 # Pre-defined routes
 
 | Auth                      | User             | App           |
