@@ -14,13 +14,16 @@
  import { UserService } from '../services'
  import Helper, { CUserAuthInfoRequest } from '../db_pool/helper'
  import { User } from '../models'
+import { ResponseWrapper } from '../helpers/response_wrapper'
  
  export class UserController {
 	 public static async getAll(req: CUserAuthInfoRequest, res: Response) {
 		 const objSysAdmin = req.cUser ? req.cUser : Helper.defaultUser()
  
 		 const userService: UserService = new UserService(objSysAdmin)
-		 return res.send(await userService.getAllUsers())
+		 const response: ResponseWrapper = new ResponseWrapper(res)
+
+		 return response.ok(await userService.getAllUsers())
 	 }
  
 	 public static async addUser(req: CUserAuthInfoRequest, res: Response) {
@@ -29,7 +32,9 @@
 		 const user = new User({ hashpass: password, ...req.body })
  
 		 const userService: UserService = new UserService(objSysAdmin)
-		 return res.send(await userService.addUser(user))
+		 const response: ResponseWrapper = new ResponseWrapper(res)
+
+		 return response.created(await userService.addUser(user))
 	 }
  
 	 public static async getUser(req: CUserAuthInfoRequest, res: Response) {
@@ -40,7 +45,9 @@
 		 if (!reg.test(req.params.id_user)) return res.send({ success: false, data: { message: 'Invalid User Id' } })
  
 		 const userService: UserService = new UserService(objSysAdmin)
-		 return res.send(await userService.getSingleUser(user))
+		 const response: ResponseWrapper = new ResponseWrapper(res)
+
+		 return response.ok(await userService.getSingleUser(user))
 	 }
  
 	 public static async updateUser(req: CUserAuthInfoRequest, res: Response) {
@@ -52,14 +59,17 @@
 		 if (!reg.test(req.params.id_user)) return res.send({ success: false, data: { message: 'Invalid User Id' } })
  
 		 const userService: UserService = new UserService(objSysAdmin)
-		 return res.send(await userService.updateUser(user))
+		 const response: ResponseWrapper = new ResponseWrapper(res)
+
+		 return response.created(await userService.updateUser(user))
 	 }
  
 	 public static async getRoles(req: CUserAuthInfoRequest, res: Response) {
 		 const objSysAdmin = req.cUser ? req.cUser : Helper.defaultUser()
 		 const userService: UserService = new UserService(objSysAdmin)
+		 const response: ResponseWrapper = new ResponseWrapper(res)
  
-		 return res.send(await userService.getAllRoles())
+		 return response.ok(await userService.getAllRoles())
 	 }
  }
 

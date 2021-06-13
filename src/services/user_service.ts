@@ -210,7 +210,7 @@ export class UserService extends CommonService {
 			const query_results = await pool.aquery(cUser, sql, params)
 
 			if (query_results.rowCount <= 0) {
-				throw 'Invalid user or password'
+				throw { message: 'Invalid user or password', status: 400 }
 			}
 
 			const user = Helper.getUser(query_results.rows[0])
@@ -232,7 +232,7 @@ export class UserService extends CommonService {
 			}
 		} catch (error) {
 			logger.error(`UserService.addUser() Error: ${error}`)
-			return { success: false, data: { message: error } }
+			return { success: false, data: { message: error.message }, status: error.status }
 		}
 	}
 
@@ -255,13 +255,13 @@ export class UserService extends CommonService {
       const query_results = await pool.aquery(cUser, sql, params)
 
       if (query_results.rowCount <= 0) {
-        throw 'No data'
+        throw { message: 'No data', status: 404 }
       }
 
       const getUser = Helper.getUser(query_results.rows[0])
       return { success: true, data: { getUser } }
     } catch (error) {
-      return { success: false, data: { message: error } }
+      return { success: false, data: { message: error.message }, status: error.status }
     }
   }
 
@@ -291,7 +291,7 @@ export class UserService extends CommonService {
 			const updatedUser = await pool.aquery(objSysAdmin, sqlSet, [newPassword, username])
 
 			if (updatedUser.rowCount <= 0) {
-				throw 'Password not changed due to an error while updating'
+				throw {message: 'Password not changed due to an error while updating', status: 400}
 			}
 
 			// Emitting event that "forgot password" has ran successfully
@@ -302,7 +302,7 @@ export class UserService extends CommonService {
 				data: { message: 'Password Updated' },
 			}
 		} catch (error) {
-			return { success: false, data: { message: error } }
+			return { success: false, data: { message: error.message }, status: error.status }
 		}
 	}
 
@@ -326,14 +326,14 @@ export class UserService extends CommonService {
 				username,
 			])
 			if (updatedUser.rowCount <= 0) {
-				throw 'Password not changed due to an error while updating'
+				throw {message: 'Password not changed due to an error while updating', status: 400}
 			}
 			return {
 				success: true,
 				data: { message: 'Password Updated' },
 			}
 		} catch (error) {
-			return { success: false, data: { message: error } }
+			return { success: false, data: { message: error.message }, status: error.status }
 		}
 	}
 
@@ -390,7 +390,7 @@ export class UserService extends CommonService {
       const user_sql = `UPDATE users SET ${user_columns} WHERE id = '${user.id}'`
 
       const res = await pool.aquery(this.user_current, user_sql, [])
-      if(!res.rowCount) throw 'User does not exist'
+      if(!res.rowCount) throw {message: 'User does not exist', status: 404}
 
       let roles_columns = `id_role = '${user.id_role}'`
       // update user_roles
@@ -403,7 +403,7 @@ export class UserService extends CommonService {
       return { success: true, data: { message: 'Row(s) updated' } }
     } catch (error) {
       logger.error(`UserService.updateUser() Error: ${error}`)
-      return { success: false, data: { message: error.detail || error } }
+      return { success: false, data: { message: error.detail || error.message }, status: error.status }
     }
   }
   public async getAllRoles(): Promise<any> {
