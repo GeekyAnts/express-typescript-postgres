@@ -128,6 +128,9 @@ cd src;
 
 # Install NPM dependencies
 npm install;
+
+# Map new-migration command
+npm link
 ```
 
 # How to SetUp Database?
@@ -148,11 +151,9 @@ To ensure consitency of database across every system that uses this boilerplate 
 - Every time application runs it checks for any newly added sql scripts inside migrations folder and add them to the database with respective statuses pending, successful and failed.
 - **Pending** - Script execution has not occurred yet, **Successful** - Script execution completed without error and **Failed** - Script execution was unsuccessful.
 
- ### How to create new Migration
+ ### How to create new Migration File
 
 ```sh
-cd src/
-npm link
 new-migration
 ```
 ### How Snapshot works
