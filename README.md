@@ -130,7 +130,7 @@ cd src;
 npm install;
 
 # Map new-migration command
-npm link
+sudo npm link;
 ```
 
 # How to SetUp Database?
