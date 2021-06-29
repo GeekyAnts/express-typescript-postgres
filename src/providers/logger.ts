@@ -31,8 +31,8 @@
 import winston, { LogEntry } from 'winston'
 import { NextFunction } from 'express'
 
-const chalk = require('chalk')     // used for colorizing console output
-const moment = require('moment')    // used for calculating response times
+const chalk = require('chalk') // used for colorizing console output
+const moment = require('moment') // used for calculating response times
 const uuid4 = require('uuid/v4')
 const onFinished = require('on-finished')
 const debug_logger = require('debug')('iv:logger')
@@ -42,16 +42,15 @@ const MESSAGE = Symbol.for('message')
 debug_logger(`logger level = ${level}`)
 
 interface CustomConsoleTransportOptions extends winston.transports.ConsoleTransportOptions {
-	name: string
+  name: string
 }
 
-interface CustomFileTransportOptions
-	extends winston.transports.FileTransportOptions {
-	name: string
+interface CustomFileTransportOptions extends winston.transports.FileTransportOptions {
+  name: string
 }
 
 interface CustomWinstonTransport extends winston.transport {
-	name: string
+  name: string
 }
 
 /**
@@ -62,8 +61,8 @@ interface CustomWinstonTransport extends winston.transport {
  * @returns {object}  - the logEntry object with a timestamp field prepended
  **/
 const jsonFormatter = (logEntry: LogEntry) => {
-	const base = { timestamp: moment().toISOString() }
-	return Object.assign(base, logEntry)
+  const base = { timestamp: moment().toISOString() }
+  return Object.assign(base, logEntry)
 }
 
 /**
@@ -84,48 +83,51 @@ const jsonFormatter = (logEntry: LogEntry) => {
  * @returns {object}  - the logEntry reformatted as a string that matches the output of the now discontinued morgan package
  **/
 const consoleFormatter = (logEntry: LogEntry): LogEntry => {
-	const color =
-		logEntry.status === undefined
-			? chalk.white
-			: logEntry.status >= 500
-				? chalk.red // red
-				: logEntry.status >= 400
-					? chalk.yellow // yellow
-					: logEntry.status >= 300
-						? chalk.cyan // cyan
-						: logEntry.status >= 200
-							? chalk.green // green
-							: chalk.white // no color
+  const color =
+    logEntry.status === undefined
+      ? chalk.white
+      : logEntry.status >= 500
+      ? chalk.red // red
+      : logEntry.status >= 400
+      ? chalk.yellow // yellow
+      : logEntry.status >= 300
+      ? chalk.cyan // cyan
+      : logEntry.status >= 200
+      ? chalk.green // green
+      : chalk.white // no color
 
-	/*
-	 * 'label' is an optional argument that can be used to provide special handling for any log message
-	 * here used just for special handling of logging for express requests and responses
-	 */
-	switch (logEntry.label) {
-		case 'express_request':
-			Object.assign(logEntry, {
-				[MESSAGE]:
-					`${moment().toISOString()} ` +
-					`${logEntry.req.method} ${logEntry.req.url} ` +
-					`| hostname: ${logEntry.req.hostname} | ip: ${logEntry.req.ip} | origin: ${logEntry.req.origin}`,
-			})
-			break
+  /*
+   * 'label' is an optional argument that can be used to provide special handling for any log message
+   * here used just for special handling of logging for express requests and responses
+   */
+  switch (logEntry.label) {
+    case 'express_request':
+      Object.assign(logEntry, {
+        [MESSAGE]:
+          `${moment().toISOString()} ` +
+          `${logEntry.req.method} ${logEntry.req.url} ` +
+          `| hostname: ${logEntry.req.hostname} | ip: ${logEntry.req.ip} | origin: ${logEntry.req.origin}`,
+      })
+      break
 
-		case 'express_response':
-			// colorize the method, url and status part of the string
-			const resp_str = color(`${logEntry.req.method} ${logEntry.req.url} (${logEntry.status}) `)
-			Object.assign(logEntry, {
-				[MESSAGE]: `${moment().toISOString()} ` + resp_str + `${logEntry.res.responseTime} ms - ${logEntry.res.contentLength} b\n\n`,
-			})
-			logEntry.level = 'notice'
-			break
+    case 'express_response':
+      // colorize the method, url and status part of the string
+      const resp_str = color(`${logEntry.req.method} ${logEntry.req.url} (${logEntry.status}) `)
+      Object.assign(logEntry, {
+        [MESSAGE]:
+          `${moment().toISOString()} ` +
+          resp_str +
+          `${logEntry.res.responseTime} ms - ${logEntry.res.contentLength} b\n\n`,
+      })
+      logEntry.level = 'notice'
+      break
 
-		default:
-			Object.assign(logEntry, { [MESSAGE]: logEntry.message })
-			break
-	}
+    default:
+      Object.assign(logEntry, { [MESSAGE]: logEntry.message })
+      break
+  }
 
-	return logEntry
+  return logEntry
 }
 
 /**
@@ -159,25 +161,19 @@ const consoleFormatter = (logEntry: LogEntry): LogEntry => {
  * @returns {object} info | false - Mutated Winston info object or false
  **/
 const filterTransport = winston.format((info, opts): any => {
-	// Fetch the transport that information logging is currently targeting.
-	// tslint:disable-next-line: no-use-before-declare
-	const transport = logger.transports.find(
-		(_transport: CustomWinstonTransport) => {
-			return _transport.name === opts.target
-		}
-	) as CustomWinstonTransport
+  // Fetch the transport that information logging is currently targeting.
+  // tslint:disable-next-line: no-use-before-declare
+  const transport = logger.transports.find((_transport: CustomWinstonTransport) => {
+    return _transport.name === opts.target
+  }) as CustomWinstonTransport
 
-	// Determine if the fetched transport was one of the intended targets when logging was invoked.
-	const abort =
-		Array.isArray(info.targets) &&
-		!(
-			info.targets.length === 0 ||
-			info.targets.includes('all') ||
-			info.targets.includes(transport.name)
-		)
+  // Determine if the fetched transport was one of the intended targets when logging was invoked.
+  const abort =
+    Array.isArray(info.targets) &&
+    !(info.targets.length === 0 || info.targets.includes('all') || info.targets.includes(transport.name))
 
-	// Abort filters (disables) logging on the current transport.
-	return abort ? false : info
+  // Abort filters (disables) logging on the current transport.
+  return abort ? false : info
 })
 
 /**
@@ -193,27 +189,23 @@ const filterTransport = winston.format((info, opts): any => {
  * @returns {object} logger - an instance of a Winston logger that logs both to stdout and Postgres
  **/
 const logger = winston.createLogger({
+  levels: winston.config.syslog.levels,
 
-	levels: winston.config.syslog.levels,
-
-	transports: [
-		// standard console logging
-		new winston.transports.Console({
-			name: 'console', // Transport Name
-			level: level,
-			format: winston.format.combine(filterTransport({ target: 'console' }), winston.format(consoleFormatter)()),
-		} as CustomConsoleTransportOptions),
-		// logging JSON to a file called ismdb_api.log, enabled for initial development and as a functional example of json/file logging
-		new winston.transports.File({
-			name: 'file', // Transport Name
-			filename: 'backend_api.log',
-			level: level,
-			format: winston.format.combine(
-				filterTransport({ target: 'file' }),
-				winston.format(jsonFormatter)()
-			),
-		} as CustomFileTransportOptions),
-	],
+  transports: [
+    // standard console logging
+    new winston.transports.Console({
+      name: 'console', // Transport Name
+      level: level,
+      format: winston.format.combine(filterTransport({ target: 'console' }), winston.format(consoleFormatter)()),
+    } as CustomConsoleTransportOptions),
+    // logging JSON to a file called ismdb_api.log, enabled for initial development and as a functional example of json/file logging
+    new winston.transports.File({
+      name: 'file', // Transport Name
+      filename: 'backend_api.log',
+      level: level,
+      format: winston.format.combine(filterTransport({ target: 'file' }), winston.format(jsonFormatter)()),
+    } as CustomFileTransportOptions),
+  ],
 })
 
 /**
@@ -222,70 +214,68 @@ const logger = winston.createLogger({
  * @param {object} req - ExpressJS request object
  * @param {object} res - ExpressJS response object
  * @param {string} label - a user-defined discriminator
- * 
+ *
  * @returns {object} log_data - a Javascript object with some combination of request, response and user data
  **/
 const prepLogData = (req: any, res: any, label: any): any => {
-	const status = (typeof res.headersSent !== 'boolean'
-		? Boolean(res._header)
-		: res.headersSent) ? res.statusCode : undefined
+  const status = (typeof res.headersSent !== 'boolean' ? Boolean(res._header) : res.headersSent)
+    ? res.statusCode
+    : undefined
 
-	const log_data = {
-		label: label,
-		status: status,
-		txID: req.txID,
-		req: {
-			method: req.method,
-			url: req.originalUrl,
-			query: req.query,
-			hostname: req.hostname,
-			ip: req.ip,
-			origin: req.header('origin'),
-			client: req.header('x-sbx-itt-client'),
-		},
-		res: {
-			responseTime: res.responseTime,
-			contentLength: res.getHeaders()['content-length']
-		}
-	}
+  const log_data = {
+    label: label,
+    status: status,
+    txID: req.txID,
+    req: {
+      method: req.method,
+      url: req.originalUrl,
+      query: req.query,
+      hostname: req.hostname,
+      ip: req.ip,
+      origin: req.header('origin'),
+      client: req.header('x-sbx-itt-client'),
+    },
+    res: {
+      responseTime: res.responseTime,
+      contentLength: res.getHeaders()['content-length'],
+    },
+  }
 
-	if (undefined !== req.sbxUser) {
-		Object.assign(log_data, {
-			id: req.sbxUser.id || null,
-			username: req.sbxUser.username || null,
-			id_org: req.sbxUser.id_org || null
-		})
-	}
-	return log_data
+  if (undefined !== req.sbxUser) {
+    Object.assign(log_data, {
+      id: req.sbxUser.id || null,
+      username: req.sbxUser.username || null,
+      id_org: req.sbxUser.id_org || null,
+    })
+  }
+  return log_data
 }
 
 // Initialize request
 const initRequest = function initRequest(req: any, _res: any, next: NextFunction) {
-	// just record the start time and generate a txID
-	req.receivedAt = process.hrtime()
-	req.txID = uuid4()
-	next()
+  // just record the start time and generate a txID
+  req.receivedAt = process.hrtime()
+  req.txID = uuid4()
+  next()
 }
 
 //Log responses
 const logResponse = (req: any, res: any, next: NextFunction) => {
-	// prep the log message ...
-	function responseLog() {
+  // prep the log message ...
+  function responseLog() {
+    if (res.statusCode !== 401) {
+      // calculate elapsed time (initially in ns, convert to ms then display with fixed decimal)
+      res.timeDiff = process.hrtime(req.receivedAt)
+      res.responseTime = ((res.timeDiff[0] * 1e9 + res.timeDiff[1]) * 1e-6).toFixed(3)
+      // log the response
+      const log_data = prepLogData(req, res, 'express_response')
+      logger.notice('', log_data)
+    }
+  }
+  // but wait until the response if finished to actually log.
+  onFinished(res, responseLog)
 
-		if (res.statusCode !== 401) {
-			// calculate elapsed time (initially in ns, convert to ms then display with fixed decimal)
-			res.timeDiff = process.hrtime(req.receivedAt)
-			res.responseTime = ((res.timeDiff[0] * 1e9 + res.timeDiff[1]) * 1e-6).toFixed(3)
-			// log the response
-			const log_data = prepLogData(req, res, 'express_response')
-			logger.notice('', log_data)
-		}
-	}
-	// but wait until the response if finished to actually log.
-	onFinished(res, responseLog)
-
-	next()
+  next()
 }
 
 export { logger, initRequest, logResponse, prepLogData }
-

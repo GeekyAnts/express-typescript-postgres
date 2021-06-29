@@ -11,23 +11,28 @@ import { Client } from 'postmark'
 import { email } from '../../config'
 
 interface EmailConfig {
-	token: string
-	from: string
+  token: string
+  from: string
 }
 
 export class EmailService {
-	public config: EmailConfig = email.primary
-	public client: Client
+  public config: EmailConfig = email.primary
 
-	constructor() {
-		this.client = new Client(this.config.token)
-	}
+  public client: Client
 
-	public async send(To: string, Subject: string, Tag: string, HtmlBody: string) {
-		return this.client.sendEmail({
-			From: this.config.from, To, Tag, Subject, HtmlBody
-		})
-	}
+  constructor() {
+    this.client = new Client(this.config.token)
+  }
+
+  public async send(To: string, Subject: string, Tag: string, HtmlBody: string) {
+    return this.client.sendEmail({
+      From: this.config.from,
+      To,
+      Tag,
+      Subject,
+      HtmlBody,
+    })
+  }
 }
 
-export default new EmailService
+export default new EmailService()

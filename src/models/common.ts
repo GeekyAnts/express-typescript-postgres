@@ -9,50 +9,54 @@
 import Helper from '../db_pool/helper'
 import { logger } from '../providers/logger'
 
-import {
-	NullableNumber, NullableDate, NullableBoolean, NullableString
-} from '../typings/types'
+import { NullableNumber, NullableDate, NullableBoolean, NullableString } from '../typings/types'
 
 export class Common {
-	public id: NullableNumber = undefined
-	public created_date: NullableDate = undefined
-	public created_by: NullableNumber = undefined
-	public delete: NullableBoolean = undefined
-	public deleted_by: NullableNumber = undefined
-	public deleted_date: NullableDate = undefined
-	public modified_by: NullableNumber = undefined
-	public modified_date: NullableDate = undefined
-	public _table_name: NullableString = undefined
+  public id: NullableNumber = undefined
 
-	constructor() { }
+  public created_date: NullableDate = undefined
 
-	public copyFrom(copyObj: any) {
-		Helper.shallowCopy(copyObj, this)
-	}
+  public created_by: NullableNumber = undefined
 
-	public setTableName(table_name: string) {
-		this._table_name = table_name
-	}
+  public delete: NullableBoolean = undefined
 
-	public getTableName() {
-		return this._table_name
-	}
+  public deleted_by: NullableNumber = undefined
 
-	/**
-	 * Dump this class to the log
-	 */
-	dump() {
-		logger.info(this)
-	}
+  public deleted_date: NullableDate = undefined
 
-	/**
-	 * Determine if this instance has a specific property
-	 *
-	 * @param {*} prop
-	 */
-	hasUserProperty(prop: any) {
-		return this.hasOwnProperty(prop)
-	}
+  public modified_by: NullableNumber = undefined
+
+  public modified_date: NullableDate = undefined
+
+  public _table_name: NullableString = undefined
+
+  public copyFrom(copyObj: any) {
+    Helper.shallowCopy(copyObj, this)
+  }
+
+  public setTableName(table_name: string) {
+    this._table_name = table_name
+  }
+
+  public getTableName() {
+    return this._table_name
+  }
+
+  /**
+   * Dump this class to the log
+   */
+  dump() {
+    logger.info(this)
+  }
+
+  /**
+   * Determine if this instance has a specific property
+   *
+   * @param {*} prop
+   */
+  hasUserProperty(prop: any) {
+    return this.hasOwnProperty(prop)
+  }
 }
 
 export default Common
