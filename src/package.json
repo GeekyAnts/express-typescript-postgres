@@ -13,7 +13,7 @@
         "dev": "./node_modules/.bin/tsc --project ./tsconfig.json --watch & NODE_ENV=development ts-node-dev index.ts",
         "prod": "./node_modules/.bin/tsc --project ./tsconfig.json --watch & NODE_ENV=production node dist/app",
         "test": "./node_modules/.bin/tsc --project ./tsconfig.json && ./node_modules/.bin/mocha dist/**/*.spec.js",
-        "lint": "./node_modules/.bin/tslint -c ./tsconfig.json src/**/**.ts"
+        "lint": "eslint --fix ./**/*.ts"
     },
     "bin": {
         "new-migration": "./migration.js"
@@ -30,6 +30,12 @@
         "@types/pg": "^7.14.4",
         "@types/swagger-jsdoc": "^3.0.2",
         "@types/uuid": "^8.3.0",
+        "@typescript-eslint/eslint-plugin": "^4.28.1",
+        "@typescript-eslint/parser": "^4.28.1",
+        "eslint": "^7.29.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^3.4.0",
+        "prettier": "^2.3.2",
         "ts-node-dev": "^1.0.0",
         "tslint": "^6.1.2",
         "typescript": "^3.9.6"

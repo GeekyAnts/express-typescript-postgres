@@ -16,6 +16,7 @@ class UserValidator {
       id_role: Joi.number().required(),
     })
   }
+
   public editUser() {
     return Joi.object({
       username: Joi.string().required(),

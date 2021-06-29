@@ -24,8 +24,8 @@ export class AuthController {
     const { username, password } = req.body
 
     const result = await UserService.login(username, password)
-		const response: ResponseWrapper = new ResponseWrapper(res)
-    
+    const response: ResponseWrapper = new ResponseWrapper(res)
+
     if (result.success) {
       events.emit('user_logins', result.data.user, req.ip, req.headers.host)
     }
@@ -34,7 +34,7 @@ export class AuthController {
 
   public static async forgotPassword(req: Request, res: Response, _next: NextFunction): Promise<Response> {
     const { username } = req.body
-		const response: ResponseWrapper = new ResponseWrapper(res)
+    const response: ResponseWrapper = new ResponseWrapper(res)
 
     return response.created(await UserService.forgotPassword(username))
   }
@@ -48,7 +48,7 @@ export class AuthController {
     const { username, oldPassword, newPassword } = req.body
 
     const userService: UserService = new UserService(objSysAdmin)
-		const response: ResponseWrapper = new ResponseWrapper(res)
+    const response: ResponseWrapper = new ResponseWrapper(res)
 
     return response.created(await userService.changePassword(username, oldPassword, newPassword))
   }
@@ -57,7 +57,7 @@ export class AuthController {
     if (!req.cUser) {
       return res.json({ success: false, data: { message: 'No user found' }, status: 404 })
     }
-		const response: ResponseWrapper = new ResponseWrapper(res)
+    const response: ResponseWrapper = new ResponseWrapper(res)
     const objSysAdmin = req.cUser
     return response.ok(await UserService.whoami(objSysAdmin.username || ''))
   }
@@ -66,7 +66,7 @@ export class AuthController {
     if (!req.cUser) {
       return res.json({ success: false, data: { message: 'No user found' }, status: 404 })
     }
-		const response: ResponseWrapper = new ResponseWrapper(res)
+    const response: ResponseWrapper = new ResponseWrapper(res)
     const objSysAdmin = req.cUser
     return response.ok(await UserService.refreshToken(objSysAdmin.username || ''))
   }
