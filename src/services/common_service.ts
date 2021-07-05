@@ -17,6 +17,7 @@ import { User } from '../models'
 import Helper from '../db_pool/helper'
 import { logger } from '../providers/logger'
 import { NullableString } from '../typings/types'
+import messages from '../constants'
 
 export class CommonService {
   public type_name: string
@@ -37,7 +38,7 @@ export class CommonService {
       if (params) result = await pool.aquery(this.user_current, sql, params)
       else result = await pool.aquery(this.user_current, sql)
 
-      if (result.rowCount === 0) throw { message: 'No data found', status: 404 }
+      if (result.rowCount === 0) throw { message: messages.errors.notFound, status: 404 }
 
       return { success: true, data: { result: result.rows } }
     } catch (error) {
@@ -54,8 +55,8 @@ export class CommonService {
     const sql = `INSERT INTO ${this.type_name} (${columns}) VALUES (${param_ids}) returning id`
     try {
       result = await pool.aquery(this.user_current, sql, params)
-      if (result.rowCount === 0) throw { message: 'No data inserted', status: 400 }
-      return { success: true, data: { result: 'Row(s) inserted', id: result.rows[0].id } }
+      if (result.rowCount === 0) throw { message: messages.errors.insert, status: 400 }
+      return { success: true, data: { result: messages.success.insert, id: result.rows[0].id } }
     } catch (error) {
       logger.error(`CommonService.insertRow() Query: ${sql}`)
       logger.error(`CommonService.insertRow() Error: ${error}`)
@@ -73,8 +74,8 @@ export class CommonService {
 
     try {
       result = await pool.aquery(this.user_current, sql, params)
-      if (result.rowCount === 0) throw { message: 'No data inserted', status: 400 }
-      return { success: true, data: { result: 'Row(s) inserted', ids: result.rows } }
+      if (result.rowCount === 0) throw { message: messages.errors.insert, status: 400 }
+      return { success: true, data: { result: messages.success.insert, ids: result.rows } }
     } catch (error) {
       logger.error(`CommonService.insertRow() Query: ${sql}`)
       logger.error(`CommonService.insertRows() Error: ${error}`)
@@ -89,8 +90,8 @@ export class CommonService {
     const sql = `UPDATE ${this.type_name} SET ${columns} WHERE ${condition}`
     try {
       result = await pool.aquery(this.user_current, sql, params)
-      if (result.rowCount === 0) throw { message: 'No data found', status: 404 }
-      return { success: true, data: { result: 'Row(s) updated' } }
+      if (result.rowCount === 0) throw { message: messages.errors.notFound, status: 404 }
+      return { success: true, data: { result: messages.success.update } }
     } catch (error) {
       logger.error(`CommonService.updateRow() Query: ${sql}`)
       logger.error(`CommonService.updateRow() Error: ${error}`)
