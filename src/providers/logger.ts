@@ -39,6 +39,8 @@ const debug_logger = require('debug')('iv:logger')
 const level = process.env.LOG_LEVEL || 'debug'
 const MESSAGE = Symbol.for('message')
 
+const config = require('../../config');
+
 debug_logger(`logger level = ${level}`)
 
 interface CustomConsoleTransportOptions extends winston.transports.ConsoleTransportOptions {
@@ -204,6 +206,9 @@ const logger = winston.createLogger({
       filename: 'backend_api.log',
       level: level,
       format: winston.format.combine(filterTransport({ target: 'file' }), winston.format(jsonFormatter)()),
+      maxFiles: config.logs.maxFiles,
+      maxsize: config.logs.maxFileSize,
+      zippedArchive: config.logs.zipOldLogs
     } as CustomFileTransportOptions),
   ],
 })

@@ -7,3 +7,4 @@ src/node_modules
 config/index.ts
 src/*lock.json
 src/*.log
+src/*.log.gz
