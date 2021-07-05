@@ -77,3 +77,14 @@ export const email = {
 		support: 'support@geekyants.com'
 	}
 };
+
+/**
+ * Customize your logs & don't let them occupy
+ * too much space.
+ */
+
+export const logs = {
+	maxFiles: 5,
+	maxFileSize: 20971520, // 20 MB
+	zipOldLogs: true
+}
