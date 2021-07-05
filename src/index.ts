@@ -80,7 +80,7 @@ async function main() {
 		logger.info(`Connected with Database: ${config.dbObj.database} and host: ${config.dbObj.host} as user: ${config.dbObj.user}`)
 		return console.log(
 			'\x1b[33m%s\x1b[0m',
-			`Server :: Running @ 'http://localhost:${port}'`
+			`Server :: Running @ 'http://localhost:${port}'\nServer :: Check out swagger @ 'http://localhost:${port}/swagger'`,
 		)
 	})
 }
