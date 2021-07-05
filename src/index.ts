@@ -78,9 +78,13 @@ async function main() {
 		}
 		logger.info(`Website API Server is running`)
 		logger.info(`Connected with Database: ${config.dbObj.database} and host: ${config.dbObj.host} as user: ${config.dbObj.user}`)
+		console.log(
+			'\x1b[33m%s\x1b[0m',
+			`Server :: Running @ 'http://localhost:${port}'`,
+		)
 		return console.log(
 			'\x1b[33m%s\x1b[0m',
-			`Server :: Running @ 'http://localhost:${port}'`
+			`Swagger :: Running @ 'http://localhost:${port}/swagger'`,
 		)
 	})
 }
