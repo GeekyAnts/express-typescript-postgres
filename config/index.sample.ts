@@ -79,6 +79,13 @@ export const email = {
 };
 
 /**
+ * Generate a random password of your desired
+ * length.
+ */
+
+export const randomPasswordLength = 10;
+
+/**
  * Customize your logs & don't let them occupy
  * too much space.
  */
