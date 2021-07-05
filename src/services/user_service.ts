@@ -28,6 +28,7 @@ import { CommonService } from '../services'
 import { logger } from '../providers/logger'
 import { TokenBody } from '../typings/interface'
 import { randomString } from '../helpers'
+import messages from '../constants'
 
 const jwt = require('njwt')
 
@@ -142,7 +143,7 @@ export class UserService extends CommonService {
     }
 
     if (!/\S+@\S+\.\S+/.test(user.username || '')) {
-      return { success: false, data: { message: 'User name should be email address' } }
+      return { success: false, data: { message: messages.errors.user.email } }
     }
 
     try {
@@ -164,7 +165,11 @@ export class UserService extends CommonService {
 
       return {
         success: true,
-        data: { message: 'Row(s) inserted', id_user: userResult.rows[0].id, id_user_role: userRoleResult.rows[0].id },
+        data: {
+          message: messages.success.insert,
+          id_user: userResult.rows[0].id,
+          id_user_role: userRoleResult.rows[0].id,
+        },
       }
     } catch (error) {
       logger.error(`UserService.addUser() Error: ${error}`)
@@ -215,7 +220,7 @@ export class UserService extends CommonService {
       const query_results = await pool.aquery(cUser, sql, params)
 
       if (query_results.rowCount <= 0) {
-        throw { message: 'Invalid user or password', status: 400 }
+        throw { message: messages.errors.user.invalidUserPassword, status: 400 }
       }
 
       const user = Helper.getUser(query_results.rows[0])
@@ -225,7 +230,7 @@ export class UserService extends CommonService {
         return {
           success: true,
           data: {
-            message: 'Login sucessful',
+            message: messages.success.user.login,
             authToken: token,
             user: user,
           },
@@ -260,7 +265,7 @@ export class UserService extends CommonService {
       const query_results = await pool.aquery(cUser, sql, params)
 
       if (query_results.rowCount <= 0) {
-        throw { message: 'No data', status: 404 }
+        throw { message: messages.errors.notFound, status: 404 }
       }
 
       const getUser = Helper.getUser(query_results.rows[0])
@@ -283,7 +288,7 @@ export class UserService extends CommonService {
 
     const response = {
       success: true,
-      data: { message: 'A reset password mail has been sent to your email if it exists in our system.' },
+      data: { message: messages.success.user.passwordReset },
     }
 
     if (userDetails.rowCount <= 0) {
@@ -296,7 +301,7 @@ export class UserService extends CommonService {
       const updatedUser = await pool.aquery(objSysAdmin, sqlSet, [newPassword, username])
 
       if (updatedUser.rowCount <= 0) {
-        throw { message: 'Password not changed due to an error while updating', status: 400 }
+        throw { message: messages.errors.user.password, status: 400 }
       }
 
       // Emitting event that "forgot password" has ran successfully
@@ -304,7 +309,7 @@ export class UserService extends CommonService {
 
       return {
         success: true,
-        data: { message: 'Password Updated' },
+        data: { message: messages.success.user.password },
       }
     } catch (error) {
       return { success: false, data: { message: error.message }, status: error.status }
@@ -319,7 +324,7 @@ export class UserService extends CommonService {
     const userDetails = await pool.aquery(this.user_current, sqlGet, [_username, oldPassword])
 
     if (userDetails.rowCount <= 0) {
-      return { success: false, data: { message: 'Current password not matched' } }
+      return { success: false, data: { message: messages.errors.user.passwordNotMatched } }
     }
 
     const { username } = userDetails.rows[0]
@@ -330,11 +335,11 @@ export class UserService extends CommonService {
         username,
       ])
       if (updatedUser.rowCount <= 0) {
-        throw { message: 'Password not changed due to an error while updating', status: 400 }
+        throw { message: messages.errors.user.password, status: 400 }
       }
       return {
         success: true,
-        data: { message: 'Password Updated' },
+        data: { message: messages.success.user.password },
       }
     } catch (error) {
       return { success: false, data: { message: error.message }, status: error.status }
@@ -364,7 +369,7 @@ export class UserService extends CommonService {
     return {
       success: false,
       data: {
-        message: 'Detials has been sent to your mail, if Exists.(Email - In development)',
+        message: messages.success.user.email,
       },
     }
   }
@@ -382,7 +387,7 @@ export class UserService extends CommonService {
     const pool = Helper.pool()
 
     if (!/\S+@\S+\.\S+/.test(user.username || '')) {
-      return { success: false, data: { message: 'User name should be email address' } }
+      return { success: false, data: { message: messages.errors.user.email } }
     }
     try {
       // begin transaction
@@ -403,7 +408,7 @@ export class UserService extends CommonService {
 
       //commit transaction
       await Helper.commitTransaction(pool, this.user_current)
-      return { success: true, data: { message: 'Row(s) updated' } }
+      return { success: true, data: { message: messages.success.update } }
     } catch (error) {
       logger.error(`UserService.updateUser() Error: ${error}`)
       return { success: false, data: { message: error.detail || error.message }, status: error.status }
