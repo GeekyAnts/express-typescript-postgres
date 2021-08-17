@@ -142,39 +142,6 @@ ALTER TABLE "time_zones" OWNER TO postgres;
 COMMENT ON COLUMN time_zones.tz_identifier IS 'IANA time zone identifiers.';
 
 /*==============================================================*/
-/* TABLE: persons                                           */
-/*==============================================================*/
-CREATE TABLE IF NOT EXISTS public.persons (
-	id SERIAL NOT NULL,
-	id_person_type INTEGER NOT NULL,
-	id_org  INTEGER,
-	first_name VARCHAR NOT NULL,
-	last_name VARCHAR NOT NULL,
-	email VARCHAR NOT NULL,
-	dob DATE,
-	id_gender INTEGER,
-	address1 VARCHAR,
-	address2 VARCHAR,
-	city VARCHAR,
-	zip VARCHAR,
-	id_state INTEGER,
-	id_country INTEGER,
-	id_time_zone INTEGER NOT NULL DEFAULT 21, 
-	CONSTRAINT pk_persons PRIMARY KEY (id),
-	CONSTRAINT ak_person_email UNIQUE (email),
-	CONSTRAINT fk_person_person_type_pk FOREIGN KEY (id_person_type) REFERENCES public.person_types (id),
-	CONSTRAINT fk_person_organizatin_pk FOREIGN KEY (id_org) REFERENCES public.organizations (id),
-	CONSTRAINT fk_person_state_pk FOREIGN KEY (id_state) REFERENCES public.states (id),
-	CONSTRAINT fk_person_country_pk FOREIGN KEY (id_country) REFERENCES public.countries (id),
-	CONSTRAINT fk_person_gender_pk FOREIGN KEY (id_gender) REFERENCES public.genders (id),
-	CONSTRAINT fk_timezone_persons FOREIGN KEY (id_time_zone) REFERENCES public.time_zones (id)
-)
-INHERITS (public.__creation_log, public.__modification_log, public.__deletion_log)
-WITH (OIDS=FALSE);
-
-ALTER TABLE public.persons OWNER TO postgres;
-
-/*==============================================================*/
 /* TABLE: roles                                                 */
 /*==============================================================*/
 CREATE TABLE IF NOT EXISTS public.roles(
@@ -191,13 +158,6 @@ INHERITS (public.__creation_log, public.__modification_log, public.__deletion_lo
 WITH (OIDS=FALSE);
 
 ALTER TABLE public.roles OWNER TO postgres;
-
-/*==============================================================*/
-/* TABLE: users                                           */
-/*==============================================================*/
-
-ALTER TABLE public.users
-ADD CONSTRAINT fk_users_person_pk FOREIGN KEY (id_person) REFERENCES public.persons (id);
 
 /*==============================================================*/
 /* TABLE: permissions                                           */
