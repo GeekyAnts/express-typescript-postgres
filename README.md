@@ -19,6 +19,15 @@ We came up with express-typescript-postgress, this repository solves all the abo
 
 and many more...
 
+## About
+
+API boilerplate by [GeekyAnts](https://geekyants.com?utm_source=github&utm_medium=opensource&utm_campaign=express-typescript-postgres).
+
+Services:
+- [Backend Engineering](https://geekyants.com/engineering/backend?utm_source=github&utm_medium=opensource&utm_campaign=express-typescript-postgres)
+- [Node.js Development](https://geekyants.com/hire-nodejs-developers?utm_source=github&utm_medium=opensource&utm_campaign=express-typescript-postgres)
+- [PostgreSQL Development](https://geekyants.com/hire-postgresql-developers?utm_source=github&utm_medium=opensource&utm_campaign=express-typescript-postgres)
+
 # What are the Pre-requisites?
 
 Binaries      | Version
